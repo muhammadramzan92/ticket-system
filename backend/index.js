@@ -5,9 +5,26 @@ const passportSetup = require("./passport");
 const passport = require("passport");
 const authRoute = require("./routes/auth");
 const app = express();
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", true);
+mongoose.connect(
+  process.env.db,
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
+mongoose.connection.on("connected", () => {
+  console.log("connected to mongo");
+});
+mongoose.connection.on("error", (err) => {
+  console.log("error", err);
+
+});
 
 app.use(
-  cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 100 })
+  cookieSession({
+    name: "session",
+    keys: ["key"],
+    maxAge: 0.02 * 60 * 60 * 100,
+  })
 );
 
 app.use(passport.initialize());

@@ -8,6 +8,7 @@ const Card = ({ post }) => {
         <img src={post.img} alt="" className="img" />
         <p className="desc">{post.desc}</p>
         <button className="cardButton">Read More</button>
+        <button className="cardButtonBook">Book Now</button>
       </Link>
     </div>
   );

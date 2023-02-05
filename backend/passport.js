@@ -1,18 +1,11 @@
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const GithubStrategy = require("passport-github2").Strategy;
-const FacebookStrategy = require("passport-facebook").Strategy;
+require("dotenv").config();
+const User=require('./model/User')
+
 const passport = require("passport");
 
-const GOOGLE_CLIENT_ID =
-  "your id";
-const GOOGLE_CLIENT_SECRET = "your id";
-
-GITHUB_CLIENT_ID = "your id";
-GITHUB_CLIENT_SECRET = "your id";
-
-FACEBOOK_APP_ID = "your id";
-FACEBOOK_APP_SECRET = "your id";
-
+const GOOGLE_CLIENT_ID =process.env.CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.CLIENT_SECRET;
 passport.use(
   new GoogleStrategy(
     {
@@ -20,37 +13,38 @@ passport.use(
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
     },
-    function (accessToken, refreshToken, profile, done) {
+    async function (accessToken, refreshToken, profile, done) {
+        
+      try {
+        
+          let existingUser = await User.findOne({ gid: profile.id });
+          // if user exists return the user
+          console.log(existingUser)
+          if (existingUser) {
+              return done(null, profile);
+          }
+          
+            //if user does not exist create a new user
+      // console.log("Creating new user...");
+      const newUser = new User({
+       
+              gid: profile.id,
+              name: profile.displayName,
+               photo: profile.photos[0].value,
+         
+      });
+      await newUser.save();
       done(null, profile);
+      // console.log(profile)
+  } catch (error) {
+    console.log(error)
+      return done(error, false);
+  }
+
     }
   )
 );
 
-passport.use(
-  new GithubStrategy(
-    {
-      clientID: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: "/auth/github/callback",
-    },
-    function (accessToken, refreshToken, profile, done) {
-      done(null, profile);
-    }
-  )
-);
-
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: FACEBOOK_APP_ID,
-      clientSecret: FACEBOOK_APP_SECRET,
-      callbackURL: "/auth/facebook/callback",
-    },
-    function (accessToken, refreshToken, profile, done) {
-      done(null, profile);
-    }
-  )
-);
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -58,4 +52,5 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((user, done) => {
   done(null, user);
+ 
 });

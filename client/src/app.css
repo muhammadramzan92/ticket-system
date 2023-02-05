@@ -59,7 +59,16 @@
   margin-bottom: 20px;
   line-height: 25px;
 }
-
+.cardButtonBook {
+  border: none;
+  margin-left: 20px;
+  border-radius: 10px;
+  background-color: rgba(53, 16, 102, 0.678);
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
 .cardButton {
   border: none;
   border-radius: 10px;
@@ -242,4 +251,5 @@ input{
     height: 0.5px;
     width: 300px;
   }
+  
 }
